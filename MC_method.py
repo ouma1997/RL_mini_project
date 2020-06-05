@@ -70,42 +70,32 @@ def update_v(pi, q_array):
     return v
 
 
-def solve_for_v(pi):
-    '''
-    For this problem, the equation can be represented as the following format:
-    v_pi_k = r_pi_k + alpha * P_pi_k * v_pi_k 
-    in matrix form
-    R = (I - alpha*A)V 
-    V = (I - alpha*A)^(-1) * R
 
-    A ∈ R^(21 * 21)
-    alpha = 0.5
-    I is a unit matrix
-    '''
-    # the equation for this problem is v_pi_k = r_pi_k + alpha * P_pi_k * v_pi_k 
-    # initialization
-    A = np.zeros([21, 21])
-    V = np.zeros([21, 1])
-    R = np.zeros([21, 1])
-    I = np.mat(np.identity(21))
-
+def get_q_array_MC(pi):
+    q_array = np.zeros([21, 3])
+    eps = np.float(10**-6) 
     coords = [k for k in range(-10, 11)]
-
     for i in range(21):
-        s = coords[i]
-        action = pi[i]
-        if action == 1: # left
-            s_prime, reward = left(s)
-        elif action == 2: # hold_still
-            s_prime, reward = hold_still(s)
-        else: # right
-            s_prime, reward = right(s)
-        R[i] = reward
-        A[i, coords.index(s_prime)] = 1
+        for j in range(3):
+            s = coords[i]
+            action = j + 1 # j = 0, 1, 2 to match the dictionary, we have action = j + 1
+            value_pre = np.float(100000000)# a very large number, this initialization is only for calculation loss of the first time
+            value = np.float(0)
+            power_of_alpha = 0
+            while (np.abs(value_pre - value) >= eps):
+                value_pre = value
+                if action == 1: # left
+                    s, reward = left(s)
+                elif action == 2: #hold_still
+                    s, reward = hold_still(s)
+                else: # right
+                    s, reward = right(s)
+                value = value + np.power(alpha, power_of_alpha) * reward
+                power_of_alpha = power_of_alpha + 1
+            q_array[i, j] = value
+    return q_array
 
-    V = np.dot(np.linalg.inv(I - alpha * A), R)  # use broadcast mechanism
-    return V
-
+    
 
 
 
@@ -114,20 +104,21 @@ def main():
     # initialize
     q_array = np.zeros([21, 3])
     pi = np.ones([21, 1]) # initial policy
+    v = np.zeros([21, 1]) * 10000 # a very large number, this initialization is only for calculation loss of the first time
 
     diff_norm = np.float(100) # a very large number comparing to eps
-    eps = np.float(10**-6)
+    eps = np.float(10**-6) 
     count = 0
-    print('policy-based method bgeins!')
+    print('model-free method bgeins!')
+
 
     while(diff_norm >= eps):
-        v_pre = solve_for_v(pi)
-        q_array = get_q_array(v_pre)
+        v_pre = v
+        q_array = get_q_array_MC(pi) # we change the policy every time a s is explored
         pi = get_policy(q_array) # pi is policy, here it is updated. Actually this function can be merged to get_q_array, we divided it into two parts for readability 
         v = update_v(pi, q_array)
         diff_norm = np.linalg.norm(v - v_pre) # we use Euclidean distance as the loss evaluator
         count = count + 1
-        
     print('done!')
     print('action value matrix: ')
     print(q_array)
@@ -140,7 +131,7 @@ def main():
     fig = plt.figure()
     x = [k for k in range(-10, 11)]
     plt.scatter(x, pi)
-    plt.title('policy_based_method')
+    plt.title('model_free_method')
     plt.ylabel('action')
     plt.xlabel('s')
     plt.show()

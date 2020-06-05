@@ -83,11 +83,15 @@ def main():
         q_array = get_q_array(v)
         pi = get_policy(q_array) # pi is policy
         v = update_v(pi, q_array)
-        diff_norm = np.linalg.norm(v - v_pre) # we use L2 norm as the loss evaluator
+        diff_norm = np.linalg.norm(v - v_pre) # we use Euclidean distance as the loss evaluator
         count = count + 1
 
+
+    print('done!')
     print('action value matrix: ')
     print(q_array)
+    print('state values:')
+    print(v)
     print('the optimal policy is: ')
     print(pi)
     print('time of iterations:', count, ' alpha =', alpha)
