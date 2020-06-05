@@ -69,15 +69,26 @@ def update_v(pi, q_array):
     return v
 
 
+def solve_for_v(pi):
+    # the equation for this problem is v_pi_k = r_pi_k + alpha * P_pi_k * v_pi_k 
+    
+
+
+
+
+
+
+
 def main():
     # initialize
     q_array = np.zeros([21, 3])
-    v = np.zeros([21, 1]) # action values
+    pi = np.ones([21, 1]) # action values
+    v = 
 
     diff_norm = np.float(100) # a very large number 
     eps = np.float(10**-6)
     count = 0
-    print('value-based method bgeins!')
+    print('policy-based method bgeins!')
     while(diff_norm >= eps):
         v_pre = v
         q_array = get_q_array(v)
