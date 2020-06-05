@@ -86,7 +86,7 @@ def get_q_array_MC(pi):
                 value_pre = value
                 if action == 1: # left
                     s, reward = left(s)
-                elif action == 2: #hold_still
+                elif action == 2: # hold_still
                     s, reward = hold_still(s)
                 else: # right
                     s, reward = right(s)
