@@ -124,7 +124,7 @@ def main():
         v_pre = solve_for_v(pi)
         q_array = get_q_array(v_pre)
         pi = get_policy(q_array) # pi is policy, here it is updated. Actually this function can be merged to get_q_array, we divided it into two parts for readability 
-        v = update_v(pi, q_array)
+        v = solve_for_v(pi)
         diff_norm = np.linalg.norm(v - v_pre) # we use Euclidean distance as the loss evaluator
         count = count + 1
         

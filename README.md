@@ -9,4 +9,3 @@ This is the mini-project of Reinforcement Learning couse in westlake university
 ## Execution
 Just enter /RL_mini_project and run:
 python main.py
-
